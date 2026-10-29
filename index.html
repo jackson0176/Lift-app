@@ -287,6 +287,7 @@
   let sheetOpen = false;
   function openSheet() {
     sheetOpen = true;
+    $('home').inert = true; // verdeckte Startseite auch für VoiceOver sperren
     $('scrim').hidden = $('sheet').hidden = false;
     animate($('scrim'), { opacity: [0, 1] }, T({ duration: 0.25 }));
     animate($('sheet'), { y: ['100%', '0%'] }, spring(0.5));
@@ -294,6 +295,7 @@
   }
   async function closeSheet() {
     sheetOpen = false;
+    $('home').inert = false;
     animate($('scrim'), { opacity: 0 }, exit(0.18));
     await animate($('sheet'), { y: '100%' }, exit(0.22));
     if (!sheetOpen) $('scrim').hidden = $('sheet').hidden = true;
@@ -358,6 +360,7 @@
     await animate($('done'), { y: '100%' }, exit(0.26));
     $('done').classList.remove('moving');
     $('done').hidden = true;
+    $('home').inert = false;
     codeOpen = false;
     $('code-body').hidden = true;
     $('code-body').style.height = '0px';
