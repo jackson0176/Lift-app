@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="de">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Flasche">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');</script>
+<!-- APP: alles ab hier ist identisch mit der Artifact-Fassung -->
+<title>Flasche Nachfüll-Coupon</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#F7F8F6">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75,700;75,800&display=swap">
+<style>
+  :root {
+    /* Layout: ein Handy-Bildschirm mit drei Ebenen (Start, Sheet, Aufgefüllt); Seite 3/4 hängt unten wie der Check-in */
+    --mint: #A6F0CF;
+    --ink: #06281B;
+    --text: #18201C;
+    --muted: #5B635F;
+    --faint: #9AA29E;
+    --paper: #F7F8F6;
+    --card: #FFFFFF;
+    --ground: #F5F7F6;
+    --line: #E3E7E4;
+    --scrim: rgba(6, 22, 15, 0.42);
+    --shadow: 0 1px 2px rgba(6, 40, 27, 0.06), 0 10px 28px rgba(6, 40, 27, 0.08);
+    --display: "Archivo", "Avenir Next Condensed", "Arial Narrow", sans-serif;
+    --ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+    --gl: max(20px, env(safe-area-inset-left, 0px));
+    --gr: max(20px, env(safe-area-inset-right, 0px));
+    --top: calc(env(safe-area-inset-top, 0px) + 14px);
+    --bottom: env(safe-area-inset-bottom, 0px);
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { height: 100%; overscroll-behavior: none; }
+  body {
+    margin: 0; overflow: hidden;
+    background: var(--paper); color: var(--text);
+    font: 16px/1.35 var(--ui);
+    -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none; user-select: none;
+  }
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+  svg { display: block; flex: none; }
+  h1, h2, p, ul { margin: 0; }
+  ul { list-style: none; padding: 0; }
+  .display { font-family: var(--display); font-stretch: 75%; font-weight: 800; letter-spacing: -0.01em; }
+  .screen { position: fixed; inset: 0; display: flex; flex-direction: column; }
+
+  .tile { width: 44px; height: 44px; border-radius: 10px; background: var(--mint); color: var(--ink); display: grid; place-items: center; flex: none; }
+  .tile svg { width: 24px; height: 24px; }
+  .pill { height: 44px; border-radius: 999px; background: var(--mint); color: var(--ink); font-weight: 650; font-size: 15px; }
+  .mark { font-size: 30px; line-height: 1; color: var(--ink); }
+
+  /* Seite 1: Start */
+  .home-bar { padding: var(--top) var(--gr) 4px var(--gl); }
+  .home-main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; padding: 14px var(--gr) 0 var(--gl); }
+  .home-title { font-size: 24px; line-height: 1.1; }
+  .slot { background: var(--card); border-radius: 16px; box-shadow: var(--shadow); }
+  .slot-head { display: flex; align-items: center; gap: 12px; padding: 14px 16px; }
+  .slot-head strong { display: block; font-size: 22px; line-height: 1.1; }
+  .slot-head span { font-size: 13px; color: var(--muted); }
+  .slot-foot { display: grid; gap: 10px; padding: 12px 16px 16px; border-top: 1px dashed var(--line); }
+  .slot-when { font-size: 11px; letter-spacing: 0.08em; text-align: center; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .near { margin: 8px calc(-1 * var(--gr)) 0 calc(-1 * var(--gl)); flex: 1; display: flex; flex-direction: column; min-height: 230px; }
+  .near h2 { font-size: 14px; font-weight: 650; padding: 12px var(--gr) 10px var(--gl); background: var(--card); }
+  .map { position: relative; flex: 1; background: #ECF0EC; overflow: hidden; }
+  .map > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .map-card { position: absolute; left: var(--gl); top: 24px; width: 112px; padding: 12px 10px; border-radius: 12px; background: var(--card); box-shadow: var(--shadow); display: grid; justify-items: center; gap: 2px; text-align: center; }
+  .map-card .tile { width: 36px; height: 36px; margin-bottom: 6px; }
+  .map-card strong { font-size: 18px; line-height: 1.1; }
+  .map-card span { font-size: 12px; color: var(--muted); }
+  .tabs { display: grid; grid-template-columns: repeat(3, 1fr); background: var(--card); border-top: 1px solid var(--line); padding: 8px var(--gr) calc(var(--bottom) + 8px) var(--gl); }
+  .tab { display: grid; justify-items: center; gap: 3px; font-size: 11px; color: var(--muted); }
+  .tab svg { width: 22px; height: 22px; }
+  .tab.on { color: var(--ink); font-weight: 650; }
+
+  /* Seite 2: Sheet */
+  .scrim { position: fixed; inset: 0; background: var(--scrim); }
+  .sheet { position: fixed; left: 0; right: 0; bottom: 0; max-height: calc(100% - 56px); overflow-y: auto; display: flex; flex-direction: column; background: var(--paper); border-radius: 18px 18px 0 0; padding: 24px var(--gr) calc(var(--bottom) + 16px) var(--gl); }
+  .sheet-title { font-size: 26px; line-height: 1.1; margin-bottom: 20px; }
+  .sheet-name { font-size: 26px; line-height: 1.1; margin: 18px 0 24px; }
+  .facts { display: grid; gap: 8px; font-size: 14px; font-variant-numeric: tabular-nums; }
+  .facts li { display: flex; align-items: center; gap: 8px; }
+  .facts svg { width: 16px; height: 16px; color: var(--muted); }
+  .fine { font-size: 12px; color: var(--muted); margin: 22px 0 26px; }
+  .pill.wide { height: 50px; font-size: 16px; }
+  .link { align-self: center; margin-top: 14px; padding: 8px; font-size: 15px; font-weight: 650; text-decoration: underline; text-underline-offset: 3px; }
+
+  /* Seite 3 + 4: Aufgefüllt / Code */
+  .done { background: var(--mint); color: var(--ink); overflow-y: auto; }
+  .ground { position: fixed; left: 0; right: 0; top: 60%; bottom: 0; z-index: -1; background: var(--ground); border-radius: 24px 24px 0 0; }
+  .done-bar { position: relative; display: flex; align-items: center; justify-content: space-between; padding: var(--top) var(--gr) 0 var(--gl); }
+  .close { width: 44px; height: 44px; border-radius: 50%; background: rgba(6, 40, 27, 0.08); display: grid; place-items: center; }
+  .close svg { width: 18px; height: 18px; }
+  .stack { position: relative; margin-top: auto; display: flex; flex-direction: column; gap: 12px; padding: 24px var(--gr) calc(var(--bottom) + min(56px, 7vh)) var(--gl); }
+  .done-title { font-size: 46px; line-height: 1; margin-bottom: 18px; text-wrap: balance; }
+  .card { background: var(--card); color: var(--text); border-radius: 16px; box-shadow: var(--shadow); }
+  .venue { padding: 16px; }
+  .venue-head { display: flex; align-items: center; gap: 16px; }
+  .venue-head strong { display: block; font-size: 17px; font-weight: 650; }
+  .venue-head span { font-size: 15px; color: var(--muted); }
+  .meta { display: grid; gap: 4px; margin-top: 18px; font-size: 15px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .meta li { display: flex; align-items: center; gap: 10px; }
+  .meta svg { width: 18px; height: 18px; color: var(--faint); }
+  .code { overflow: hidden; }
+  .code-toggle { width: 100%; height: 72px; display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 17px; font-weight: 650; }
+  .code-toggle:active { background: rgba(6, 40, 27, 0.03); }
+  .code-toggle svg { width: 22px; height: 22px; }
+  .done.moving { border-radius: 18px 18px 0 0; box-shadow: 0 -1px 0 rgba(6, 40, 27, 0.08), 0 -10px 30px rgba(6, 22, 15, 0.12); }
+  .code-body { height: 0; overflow: hidden; }
+  .code-inner { display: grid; justify-items: center; gap: 16px; padding: 24px 16px 22px; border-top: 1px solid var(--line); }
+  .qr { width: 136px; height: 136px; color: #000; }
+  .qr svg { width: 100%; height: 100%; fill: currentColor; }
+  .code-text { font-size: 15px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  /* Am Desktop (z. B. Artifact-Vorschau) als Handy-Spalte in der Mitte */
+  @media (min-width: 560px) {
+    body { background: #DDE3DF; }
+    .screen, .sheet, .scrim, .ground { left: calc(50% - 215px); right: auto; width: 430px; }
+  }
+  .share { visibility: hidden; align-self: center; margin-top: 12px; padding: 8px; font-size: 16px; font-weight: 650; color: var(--text); text-decoration: underline; text-underline-offset: 3px; }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-bottle" viewBox="0 0 24 24"><path fill-rule="evenodd" fill="currentColor" d="M10 1.8h4v2.6h-.6v1.5c0 .4.2.8.5 1l.7.5c.9.7 1.4 1.7 1.4 2.8V20a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2V10.2c0-1.1.5-2.1 1.4-2.8l.7-.5c.3-.2.5-.6.5-1V4.4H10V1.8ZM9.8 12.6h4.4v4H9.8v-4Z"/></symbol>
+  <symbol id="i-tent" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3.5 2.5 20.5h7L12 15l2.5 5.5h7L12 3.5Z"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M12 7v5.2l3.2 2" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-clock-o" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v5.2l3.2 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3.5s6 6.3 6 10.8a6 6 0 0 1-12 0c0-4.5 6-10.8 6-10.8Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-scan" viewBox="0 0 24 24"><path d="M4 9V5a1 1 0 0 1 1-1h4m6 0h4a1 1 0 0 1 1 1v4m0 6v4a1 1 0 0 1-1 1h-4m-6 0H5a1 1 0 0 1-1-1v-4m3-3h10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path fill="currentColor" d="M12 22s7.5-6.4 7.5-12.2a7.5 7.5 0 1 0-15 0C4.5 15.6 12 22 12 22Z"/><path d="m8.8 10 2.2 2.2 4.2-4.4" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4.5 20.5c1.4-3.6 4.2-5.5 7.5-5.5s6.1 1.9 7.5 5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+</svg>
+
+<!-- Seite 1: Start -->
+<section class="screen home" id="home" aria-label="Start">
+  <header class="home-bar"><span class="mark display">Flasche</span></header>
+  <div class="home-main">
+    <h1 class="home-title display">Bereit zum Auffüllen?</h1>
+    <article class="slot">
+      <div class="slot-head">
+        <span class="tile"><svg><use href="#i-bottle"/></svg></span>
+        <div><strong class="display">Nachfüllstation</strong><span>Standnr. 12 · ID 4711</span></div>
+      </div>
+      <div class="slot-foot">
+        <p class="slot-when">HEUTE • <span data-clock="time">18:12</span> UHR</p>
+        <button class="pill" id="start">Auffüllen</button>
+      </div>
+    </article>
+    <section class="near">
+      <h2>Weitere Stationen</h2>
+      <div class="map">
+        <svg viewBox="0 0 390 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <path d="M290 240 390 140v100Z" fill="#D7ECD4"/>
+          <g fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round">
+            <path d="M-10 64 150 22l110 50 140-40"/>
+            <path d="m124-10 46 130-30 130"/>
+            <path d="m-10 172 180-52 130 40 100-40"/>
+            <path d="m260 72 40 88-20 90"/>
+            <path d="m56 250 44-98-70-52"/>
+          </g>
+        </svg>
+        <div class="map-card">
+          <span class="tile"><svg><use href="#i-bottle"/></svg></span>
+          <strong class="display">Station 7</strong>
+          <span>205 m</span>
+          <span>Nur Pfandrückgabe</span>
+        </div>
+      </div>
+    </section>
+  </div>
+  <nav class="tabs" aria-hidden="true">
+    <span class="tab on"><svg><use href="#i-pin"/></svg>Nachfüllen</span>
+    <span class="tab"><svg><use href="#i-search"/></svg>Entdecken</span>
+    <span class="tab"><svg><use href="#i-user"/></svg>Profil</span>
+  </nav>
+</section>
+
+<!-- Seite 2: Bestätigen -->
+<div class="scrim" id="scrim" hidden></div>
+<section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" hidden>
+  <h2 class="sheet-title display" id="sheet-title">Auf geht’s!</h2>
+  <span class="tile"><svg><use href="#i-bottle"/></svg></span>
+  <p class="sheet-name display">Nachfüllstation</p>
+  <ul class="facts">
+    <li><svg><use href="#i-clock-o"/></svg><span data-clock="long">18:12 Uhr • Donnerstag, 29. Okt.</span></li>
+    <li><svg><use href="#i-tent"/></svg>Standnr. 12 · ID 4711</li>
+    <li><svg><use href="#i-drop"/></svg>1 × Getränk nachfüllen</li>
+  </ul>
+  <p class="fine">Der Coupon gilt für eine Nachfüllung. Zeig danach den Code am Stand.</p>
+  <button class="pill wide" id="confirm">Auffüllen</button>
+  <button class="link" id="cancel">Abbrechen</button>
+</section>
+
+<!-- Seite 3 + 4: Aufgefüllt / Code -->
+<section class="screen done" id="done" aria-labelledby="done-title" hidden>
+  <div class="ground" id="ground"></div>
+  <header class="done-bar" id="done-bar">
+    <span class="mark display" id="done-mark">Flasche</span>
+    <button class="close" id="close" aria-label="Schließen"><svg><use href="#i-x"/></svg></button>
+  </header>
+  <div class="stack" id="stack">
+    <h1 class="done-title display" id="done-title">Aufgefüllt</h1>
+    <article class="card venue" id="venue">
+      <div class="venue-head">
+        <span class="tile"><svg><use href="#i-bottle"/></svg></span>
+        <div><strong>Nachfüllstation</strong><span>1 × Getränk</span></div>
+      </div>
+      <ul class="meta">
+        <li><svg><use href="#i-tent"/></svg>Standnr. 12 · ID 4711</li>
+        <li><svg><use href="#i-clock"/></svg><span data-clock="short">18:12 Uhr • 29. Okt.</span></li>
+      </ul>
+    </article>
+    <article class="card code" id="code">
+      <button class="code-toggle" id="code-toggle" aria-expanded="false" aria-controls="code-body">
+        <svg><use href="#i-scan"/></svg><span id="code-label">Code anzeigen</span>
+      </button>
+      <div class="code-body" id="code-body" hidden>
+        <div class="code-inner" id="code-inner">
+          <div class="qr" id="qr"></div>
+          <p class="code-text" id="code-text"></p>
+        </div>
+      </div>
+    </article>
+    <button class="share" id="share">Mit Freunden teilen</button>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/motion@12.23.12/dist/motion.js" integrity="sha384-L8F6MBCtza31dSRnyAsxhtWvL4lBh6NwQ27N+T2yd16CGe7UKTa7EVaTDmAP5Wv/" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" integrity="sha384-mZT2gIty7ZDdOGkxfP6joZcYdMW1Jvj9dRlfpTmaJAKKXTqzygtB22k7FLe+KZC1" crossorigin="anonymous"></script>
+<script>
+  const { animate, press } = Motion;
+  const $ = (id) => document.getElementById(id);
+  const PAPER = '#F7F8F6', MINT = '#A6F0CF';
+  const STAND_ID = '4711';
+
+  // Bewegung: Springs für alles Unterbrechbare, kurze Tweens für Ausgänge. Reduzierte Bewegung = sofort.
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const T = (opts) => (reduce ? { duration: 0 } : opts);
+  const spring = (visualDuration, bounce = 0) => T({ type: 'spring', visualDuration, bounce });
+  const exit = (duration) => T({ duration, ease: 'easeIn' });
+
+  function setTheme(color) { document.querySelector('meta[name="theme-color"]').content = color; }
+
+  // Datum und Uhrzeit immer aktuell
+  const fmt = (o) => new Intl.DateTimeFormat('de-DE', o);
+  const fTime = fmt({ hour: '2-digit', minute: '2-digit' });
+  const fDay = fmt({ day: '2-digit', month: 'short' });
+  const fLong = fmt({ weekday: 'long', day: 'numeric', month: 'short' });
+  function tick() {
+    const now = new Date(), t = fTime.format(now);
+    const text = { time: t, short: `${t} Uhr • ${fDay.format(now)}`, long: `${t} Uhr • ${fLong.format(now)}` };
+    for (const el of document.querySelectorAll('[data-clock]')) el.textContent = text[el.dataset.clock];
+  }
+  tick();
+  setInterval(tick, 1000);
+  document.addEventListener('visibilitychange', tick);
+
+  // QR = Coupon-Code + Zeitstempel des Antippens
+  const pad = (n) => String(n).padStart(2, '0');
+  function renderCode() {
+    const d = new Date();
+    const ymd = `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}`;
+    const hms = `${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
+    const payload = `FLASCHE-${STAND_ID}-${ymd}-${hms}`;
+    const qr = qrcode(0, 'M');
+    qr.addData(payload, 'Alphanumeric');
+    qr.make();
+    const n = qr.getModuleCount();
+    let path = '';
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (qr.isDark(r, c)) path += `M${c} ${r}h1v1h-1z`;
+    $('qr').innerHTML = `<svg viewBox="-2 -2 ${n + 4} ${n + 4}" shape-rendering="crispEdges" role="img" aria-label="QR-Code ${payload}"><path d="${path}"/></svg>`;
+    $('qr').dataset.payload = payload;
+    $('code-text').textContent = `${STAND_ID} · ${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()} · ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  }
+
+  // Seite 1 → 2: Sheet fährt hoch
+  let sheetOpen = false;
+  function openSheet() {
+    sheetOpen = true;
+    $('scrim').hidden = $('sheet').hidden = false;
+    animate($('scrim'), { opacity: [0, 1] }, T({ duration: 0.25 }));
+    animate($('sheet'), { y: ['100%', '0%'] }, spring(0.5));
+    $('confirm').focus({ preventScroll: true });
+  }
+  async function closeSheet() {
+    sheetOpen = false;
+    animate($('scrim'), { opacity: 0 }, exit(0.18));
+    await animate($('sheet'), { y: '100%' }, exit(0.22));
+    if (!sheetOpen) $('scrim').hidden = $('sheet').hidden = true;
+  }
+
+  // Graue Fläche sitzt knapp unter der Oberkante der Stand-Karte (wie in der Referenz)
+  let groundTop = 0;
+  function placeGround() {
+    if (codeOpen) return;
+    groundTop = $('stack').offsetTop + $('venue').offsetTop + 40 - $('done').scrollTop;
+    $('ground').style.top = `${groundTop}px`;
+  }
+  addEventListener('resize', placeGround);
+
+  // Seite 2 → 3 wie im Video: die fertige Seite fährt als ein Stück von unten über alles,
+  // schnell los, langer weicher Auslauf, kein Überschwingen (sichtbar fertig nach ca. 0,8 s)
+  async function confirmRefill() {
+    const done = $('done');
+    if (!done.hidden) return;
+    done.style.transform = 'translateY(100%)';
+    done.classList.add('moving');
+    done.hidden = false;
+    done.scrollTop = 0;
+    placeGround();
+    setTheme(MINT);
+    await animate(done, { y: ['100%', '0%'] }, spring(0.69));
+    done.classList.remove('moving');
+    sheetOpen = false;
+    $('scrim').hidden = $('sheet').hidden = true;
+    $('code-toggle').focus({ preventScroll: true });
+  }
+
+  // Seite 3 → 4: Code klappt auf, kommt von unten
+  let codeOpen = false;
+  function setCode(open) {
+    codeOpen = open;
+    const body = $('code-body'), ground = $('ground');
+    $('code-toggle').setAttribute('aria-expanded', open);
+    $('code-label').textContent = open ? 'Code ausblenden' : 'Code anzeigen';
+    // Startwerte immer explizit: Motion merkt sich sonst Werte, die inzwischen direkt gesetzt wurden
+    const from = body.offsetHeight, groundFrom = getComputedStyle(ground).top;
+    if (open) {
+      renderCode();
+      body.hidden = false;
+      body.style.height = 'auto';
+      const to = body.offsetHeight;
+      body.style.height = `${from}px`;
+      animate(body, { height: [from, to] }, spring(0.5)).then(() => { if (codeOpen) body.style.height = 'auto'; });
+      animate($('code-inner'), { opacity: [0, 1], y: [36, 0] }, T({ type: 'spring', visualDuration: 0.55, bounce: 0.14, delay: 0.05 }));
+      animate(ground, { top: [groundFrom, `${groundTop - 24}px`] }, spring(0.5));
+    } else {
+      body.style.height = `${from}px`;
+      animate($('code-inner'), { opacity: 0, y: 16 }, exit(0.16));
+      animate(body, { height: [from, 0] }, exit(0.28)).then(() => { if (!codeOpen) body.hidden = true; });
+      animate(ground, { top: [groundFrom, `${groundTop}px`] }, exit(0.28));
+    }
+  }
+
+  // Schließen: zurück zum Start
+  async function closeDone() {
+    $('done').classList.add('moving');
+    await animate($('done'), { y: '100%' }, exit(0.26));
+    $('done').classList.remove('moving');
+    $('done').hidden = true;
+    codeOpen = false;
+    $('code-body').hidden = true;
+    $('code-body').style.height = '0px';
+    $('code-toggle').setAttribute('aria-expanded', 'false');
+    $('code-label').textContent = 'Code anzeigen';
+    setTheme(PAPER);
+    $('start').focus({ preventScroll: true });
+  }
+
+  $('start').addEventListener('click', openSheet);
+  $('cancel').addEventListener('click', closeSheet);
+  $('scrim').addEventListener('click', closeSheet);
+  $('confirm').addEventListener('click', confirmRefill);
+  $('code-toggle').addEventListener('click', () => setCode(!codeOpen));
+  $('close').addEventListener('click', closeDone);
+  addEventListener('keydown', (e) => { if (e.key === 'Escape' && sheetOpen && $('done').hidden) closeSheet(); });
+
+  // Teilen nur zeigen, wo das Gerät es kann (iPhone ja, Artifact-Vorschau nein); der Platz bleibt immer gleich
+  if (navigator.canShare?.({ url: location.href })) {
+    $('share').style.visibility = 'visible';
+    $('share').addEventListener('click', () => navigator.share({ title: 'Flasche', url: location.href }).catch(() => {}));
+  }
+
+  // Tipp-Feedback
+  press('.pill, .link, .close, .share', (el) => {
+    animate(el, { scale: 0.96 }, spring(0.1));
+    return () => animate(el, { scale: 1 }, spring(0.15));
+  });
+</script>
