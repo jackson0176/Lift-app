@@ -1,6 +1,6 @@
 // ponytail: cache-first, damit die App auf dem Festival offline läuft.
 // Bei Änderungen CACHE hochzählen, sonst sehen installierte Geräte die alte Version.
-const CACHE = 'flasche-v12';
+const CACHE = 'flasche-v13';
 const FILES = [
   './', './index.html', './manifest.webmanifest', './icon.png', './Logo%20Lift.jpg', './Logo%20Lift2-transparent.png', './Logo%20Lift3.png',
   'https://cdn.jsdelivr.net/npm/motion@12.23.12/dist/motion.js',

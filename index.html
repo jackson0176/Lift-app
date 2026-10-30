@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Flasche">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');</script>
 <!-- APP: alles ab hier ist identisch mit der Artifact-Fassung -->
 <title>Flasche Nachfüll-Coupon</title>
@@ -244,7 +244,6 @@
 <script>
   const { animate, press } = Motion;
   const $ = (id) => document.getElementById(id);
-  const PAPER = '#F7F8F6', MINT = '#A6F0CF';
   const STAND_ID = '4711';
 
   // Bewegung: Springs für alles Unterbrechbare, kurze Tweens für Ausgänge. Reduzierte Bewegung = sofort.
@@ -253,7 +252,7 @@
   const spring = (visualDuration, bounce = 0) => T({ type: 'spring', visualDuration, bounce });
   const exit = (duration) => T({ duration, ease: 'easeIn' });
 
-  function setTheme(color) { document.querySelector('meta[name="theme-color"]').content = color; }
+  function setTheme(variable) { document.querySelector('meta[name="theme-color"]').content = getComputedStyle(document.documentElement).getPropertyValue(variable).trim(); }
 
   // Datum und Uhrzeit immer aktuell
   const fmt = (o) => new Intl.DateTimeFormat('de-DE', o);
@@ -324,7 +323,7 @@
     done.hidden = false;
     done.scrollTop = 0;
     placeGround();
-    setTheme(MINT);
+    setTheme('--mint');
     await animate(done, { y: ['100%', '0%'] }, spring(0.69));
     done.classList.remove('moving');
     sheetOpen = false;
@@ -370,7 +369,7 @@
     $('code-body').style.height = '0px';
     $('code-toggle').setAttribute('aria-expanded', 'false');
     $('code-label').textContent = 'Code anzeigen';
-    setTheme(PAPER);
+    setTheme('--paper');
     $('start').focus({ preventScroll: true });
   }
 
