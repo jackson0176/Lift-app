@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Flasche">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');</script>
 <!-- APP: alles ab hier ist identisch mit der Artifact-Fassung -->
 <title>Flasche Nachfüll-Coupon</title>
@@ -133,9 +134,6 @@
     body { background: var(--card); }
     body:has(#sheet:not([hidden])) { background: var(--paper); }
     body:has(#done:not([hidden])) { background: var(--ground); }
-    body::before { content: ""; position: fixed; top: 0; left: 0; right: 0; height: 1px; background: var(--paper); z-index: 100; pointer-events: none; }
-    body:has(#sheet:not([hidden]))::before { background: linear-gradient(var(--scrim), var(--scrim)), var(--paper); }
-    body:has(#done:not([hidden]))::before { background: var(--mint); }
   }
   .share { visibility: hidden; align-self: center; margin-top: 12px; padding: 8px; font-size: 16px; font-weight: 650; color: var(--text); text-decoration: underline; text-underline-offset: 3px; }
 </style>
