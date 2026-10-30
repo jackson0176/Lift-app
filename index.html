@@ -17,7 +17,7 @@
 <style>
   :root {
     /* Layout: ein Handy-Bildschirm mit drei Ebenen (Start, Sheet, Aufgefüllt); Seite 3/4 hängt unten wie der Check-in */
-    --mint: #A6F0CF;
+    --mint: #d8385e;
     --ink: #06281B;
     --text: #18201C;
     --muted: #5B635F;
@@ -54,13 +54,16 @@
   .display { font-family: var(--display); font-stretch: 75%; font-weight: 800; letter-spacing: -0.01em; }
   .screen { position: fixed; inset: 0; display: flex; flex-direction: column; }
 
-  .tile { width: 44px; height: 44px; border-radius: 10px; background: var(--mint); color: var(--ink); display: grid; place-items: center; flex: none; }
-  .tile svg { width: 24px; height: 24px; }
-  .pill { height: 44px; border-radius: 999px; background: var(--mint); color: var(--ink); font-weight: 650; font-size: 15px; }
+  .tile { width: 44px; height: 44px; border-radius: 10px; background: #fff; box-shadow: 0 1px 5px rgba(0, 0, 0, 0.12); color: var(--ink); display: grid; place-items: center; flex: none; }
+  .tile svg { width: 100%; height: 100%; }
+  .pill { height: 44px; border-radius: 999px; background: var(--mint); color: #fff; font-weight: 650; font-size: 15px; }
   .mark { font-size: 30px; line-height: 1; color: var(--ink); }
+  .brand-logo { display: block; width: auto; height: 32px; max-width: 180px; object-fit: contain; }
+  .done-logo { height: 28px; }
 
   /* Seite 1: Start */
   .home-bar { padding: var(--top) var(--gr) 4px var(--gl); }
+  .home-bar .mark { color: #000; }
   .home-main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; padding: 14px var(--gr) 0 var(--gl); }
   .home-title { font-size: 24px; line-height: 1.1; }
   .slot { background: var(--card); border-radius: 16px; box-shadow: var(--shadow); }
@@ -98,10 +101,11 @@
   .done { background: var(--mint); color: var(--ink); overflow-y: auto; }
   .ground { position: fixed; left: 0; right: 0; top: 60%; bottom: 0; z-index: -1; background: var(--ground); border-radius: 24px 24px 0 0; }
   .done-bar { position: relative; display: flex; align-items: center; justify-content: space-between; padding: var(--top) var(--gr) 0 var(--gl); }
+  .done-bar .mark { color: #fff; }
   .close { width: 44px; height: 44px; border-radius: 50%; background: rgba(6, 40, 27, 0.08); display: grid; place-items: center; }
-  .close svg { width: 18px; height: 18px; }
+  .close svg { width: 18px; height: 18px; color: #fff; }
   .stack { position: relative; margin-top: auto; display: flex; flex-direction: column; gap: 12px; padding: 24px var(--gr) calc(var(--bottom) + min(56px, 7vh)) var(--gl); }
-  .done-title { font-size: 46px; line-height: 1; margin-bottom: 18px; text-wrap: balance; }
+  .done-title { font-size: 46px; line-height: 1; margin-bottom: 18px; text-wrap: balance; font-weight: 700; }
   .card { background: var(--card); color: var(--text); border-radius: 16px; box-shadow: var(--shadow); }
   .venue { padding: 16px; }
   .venue-head { display: flex; align-items: center; gap: 16px; }
@@ -129,7 +133,7 @@
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="i-bottle" viewBox="0 0 24 24"><path fill-rule="evenodd" fill="currentColor" d="M10 1.8h4v2.6h-.6v1.5c0 .4.2.8.5 1l.7.5c.9.7 1.4 1.7 1.4 2.8V20a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2V10.2c0-1.1.5-2.1 1.4-2.8l.7-.5c.3-.2.5-.6.5-1V4.4H10V1.8ZM9.8 12.6h4.4v4H9.8v-4Z"/></symbol>
+  <symbol id="i-bottle" viewBox="0 0 24 24"><image href="Logo%20Lift.jpg" width="24" height="24" preserveAspectRatio="xMidYMid meet"/></symbol>
   <symbol id="i-tent" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3.5 2.5 20.5h7L12 15l2.5 5.5h7L12 3.5Z"/></symbol>
   <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M12 7v5.2l3.2 2" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></symbol>
   <symbol id="i-clock-o" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v5.2l3.2 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
@@ -143,21 +147,21 @@
 
 <!-- Seite 1: Start -->
 <section class="screen home" id="home" aria-label="Start">
-  <header class="home-bar"><span class="mark display">Flasche</span></header>
+  <header class="home-bar"><img class="brand-logo" src="Logo%20Lift2-transparent.png" alt="Lift"></header>
   <div class="home-main">
-    <h1 class="home-title display">Bereit zum Auffüllen?</h1>
+    <h1 class="home-title display">Bereit für den Checkin?</h1>
     <article class="slot">
       <div class="slot-head">
         <span class="tile"><svg><use href="#i-bottle"/></svg></span>
-        <div><strong class="display">Nachfüllstation</strong><span>Standnr. 12 · ID 4711</span></div>
+        <div><strong class="display">TopFit Ulm</strong><span>Keltergasse 11, 89073 Ulm, Deutschland</span></div>
       </div>
       <div class="slot-foot">
         <p class="slot-when">HEUTE • <span data-clock="time">18:12</span> UHR</p>
-        <button class="pill" id="start">Auffüllen</button>
+        <button class="pill" id="start">Check-in</button>
       </div>
     </article>
     <section class="near">
-      <h2>Weitere Stationen</h2>
+      <h2> Ohne Buchung</h2>
       <div class="map">
         <svg viewBox="0 0 390 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
           <path d="M290 240 390 140v100Z" fill="#D7ECD4"/>
@@ -171,15 +175,15 @@
         </svg>
         <div class="map-card">
           <span class="tile"><svg><use href="#i-bottle"/></svg></span>
-          <strong class="display">Station 7</strong>
-          <span>205 m</span>
-          <span>Nur Pfandrückgabe</span>
+          <strong class="display">TopFit Ulm</strong>
+          <span>70 m</span>
+          <span>Im Paket enthalten</span>f
         </div>
       </div>
     </section>
   </div>
   <nav class="tabs" aria-hidden="true">
-    <span class="tab on"><svg><use href="#i-pin"/></svg>Nachfüllen</span>
+    <span class="tab on"><svg><use href="#i-pin"/></svg>Check-in</span>
     <span class="tab"><svg><use href="#i-search"/></svg>Entdecken</span>
     <span class="tab"><svg><use href="#i-user"/></svg>Profil</span>
   </nav>
@@ -190,14 +194,14 @@
 <section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" hidden>
   <h2 class="sheet-title display" id="sheet-title">Auf geht’s!</h2>
   <span class="tile"><svg><use href="#i-bottle"/></svg></span>
-  <p class="sheet-name display">Nachfüllstation</p>
+  <p class="sheet-name display">TopFit Ulm</p>
   <ul class="facts">
     <li><svg><use href="#i-clock-o"/></svg><span data-clock="long">18:12 Uhr • Donnerstag, 29. Okt.</span></li>
-    <li><svg><use href="#i-tent"/></svg>Standnr. 12 · ID 4711</li>
-    <li><svg><use href="#i-drop"/></svg>1 × Getränk nachfüllen</li>
+    <li><svg viewBox="0 0 24 24" style="width: 22px; height: 22px; margin-left: -2px;"><path d="M9 6.8a1.2 1.2 0 0 0-1.8 1v8.4a1.2 1.2 0 0 0 1.8 1l7-4.2a1.2 1.2 0 0 0 0-2.1Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>Vor Ort</li>
+    <li><svg><use href="#i-user"/></svg>1 Person</li>
   </ul>
-  <p class="fine">Der Coupon gilt für eine Nachfüllung. Zeig danach den Code am Stand.</p>
-  <button class="pill wide" id="confirm">Auffüllen</button>
+  <p class="fine">Nach dem Checkin ist keine Stornierung mehr möglich.</p>
+  <button class="pill wide" id="confirm">Check-in</button>
   <button class="link" id="cancel">Abbrechen</button>
 </section>
 
@@ -205,18 +209,18 @@
 <section class="screen done" id="done" aria-labelledby="done-title" hidden>
   <div class="ground" id="ground"></div>
   <header class="done-bar" id="done-bar">
-    <span class="mark display" id="done-mark">Flasche</span>
+    <span id="done-mark"><img class="brand-logo done-logo" src="Logo%20Lift3.png" alt="Lift"></span>
     <button class="close" id="close" aria-label="Schließen"><svg><use href="#i-x"/></svg></button>
   </header>
   <div class="stack" id="stack">
-    <h1 class="done-title display" id="done-title">Aufgefüllt</h1>
+    <h1 class="done-title display" id="done-title">Check in Bestätigt</h1>
     <article class="card venue" id="venue">
       <div class="venue-head">
         <span class="tile"><svg><use href="#i-bottle"/></svg></span>
-        <div><strong>Nachfüllstation</strong><span>1 × Getränk</span></div>
+        <div><strong>TopFit Ulm</strong><span>TopFit</span></div>
       </div>
       <ul class="meta">
-        <li><svg><use href="#i-tent"/></svg>Standnr. 12 · ID 4711</li>
+        <li><svg viewBox="0 0 24 24"><path fill="currentColor" d="M4 22V5h3V2h10v3h3v17H4Zm4-13h2V7H8v2Zm6 0h2V7h-2v2Zm-6 5h2v-2H8v2Zm6 0h2v-2h-2v2Zm-6 5h2v-2H8v2Zm6 0h2v-2h-2v2Z"/></svg>Keltergasse. 11, 89073 Ulm, Deutschland</li>
         <li><svg><use href="#i-clock"/></svg><span data-clock="short">18:12 Uhr • 29. Okt.</span></li>
       </ul>
     </article>
