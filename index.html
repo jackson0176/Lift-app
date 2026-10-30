@@ -62,7 +62,7 @@
   .done-logo { height: 28px; }
 
   /* Seite 1: Start */
-  .home-bar { padding: var(--top) var(--gr) 4px var(--gl); }
+  .home-bar { padding: calc(var(--top) + 8px) var(--gr) 4px var(--gl); }
   .home-bar .mark { color: #000; }
   .home-main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; padding: 14px var(--gr) 0 var(--gl); }
   .home-title { font-size: 24px; line-height: 1.1; }
@@ -129,11 +129,6 @@
     body { background: #DDE3DF; }
     .screen, .sheet, .scrim, .ground { left: calc(50% - 215px); right: auto; width: 430px; }
   }
-  @supports (-webkit-touch-callout: none) {
-    @media (display-mode: standalone) and (max-width: 559px) {
-      .screen, .sheet, .scrim, .ground { bottom: calc(-1 * env(safe-area-inset-top, 0px)); }
-    }
-  }
   .share { visibility: hidden; align-self: center; margin-top: 12px; padding: 8px; font-size: 16px; font-weight: 650; color: var(--text); text-decoration: underline; text-underline-offset: 3px; }
 </style>
 
@@ -182,7 +177,7 @@
           <span class="tile"><svg><use href="#i-bottle"/></svg></span>
           <strong class="display">TopFit Ulm</strong>
           <span>70 m</span>
-          <span>Im Paket enthalten</span>f
+          <span>Im Paket enthalten</span>
         </div>
       </div>
     </section>
