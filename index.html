@@ -52,6 +52,7 @@
   ul { list-style: none; padding: 0; }
   .display { font-family: var(--display); font-stretch: 75%; font-weight: 800; letter-spacing: -0.01em; }
   .screen { position: fixed; inset: 0; display: flex; flex-direction: column; }
+  .home { background: var(--paper); }
 
   .tile { width: 44px; height: 44px; border-radius: 10px; background: #fff; box-shadow: 0 1px 5px rgba(0, 0, 0, 0.12); color: var(--ink); display: grid; place-items: center; flex: none; }
   .tile svg { width: 100%; height: 100%; }
@@ -127,6 +128,11 @@
   @media (min-width: 560px) {
     body { background: #DDE3DF; }
     .screen, .sheet, .scrim, .ground { left: calc(50% - 215px); right: auto; width: 430px; }
+  }
+  @media (max-width: 559px) {
+    body { background: var(--card); }
+    body:has(#sheet:not([hidden])) { background: var(--paper); }
+    body:has(#done:not([hidden])) { background: var(--ground); }
   }
   .share { visibility: hidden; align-self: center; margin-top: 12px; padding: 8px; font-size: 16px; font-weight: 650; color: var(--text); text-decoration: underline; text-underline-offset: 3px; }
 </style>
